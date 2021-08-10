@@ -1,0 +1,79 @@
+Código utilizado pelo professor no Curso do Alura: Machine Learning: Introdução ao sistemas de recomendações
+
+DataModel model = new FileDataModel(new File(dados.csv));
+UserSimilarity similarity = new PersonCorrelationSimilarity(model)
+UserNeighborhood neighborhood = new ThresholdUserNeighborhood(0.1, similaity, model);
+UserBasedRecommender recommender = new GenericUserBasedRecommender(model, neighborhood, similarity);
+
+List<RecommendedItem> recommendations = recommender.recommend(2, 3);
+for (RecommendedItem recommendation : recommendations) {
+  System.out.println(recommendation);
+}
+
+public class RecomendaProdutos {
+  public static void main(String[] args) throws IOException, TasteException {
+    File file = new File("dados.csv");
+    FileDataModel model = new FileDataModel(file);
+
+    Recommender recommender = new RecomendadorDeProdutosBuilder().buildRecommender(model);
+  }
+}
+
+public class RecomendadorDeProdutosBuilder implements RecommenderBuilder {
+  public Recommender buildRecommender(DataModel model) throws TasteException {
+    UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
+    UserNeighborhood neighborhood = new ThresholdUserNeighborhood(0.1, similarity, model);
+    UserBasedRecommender recommender = new GenericUserBasedRecommender(model, neighborhood, similarity);
+    return recommender;
+  }
+}
+
+public class AvaliadorProdutos{
+  public static void main(String[] args) throws IOException, TasteException{
+
+    RandomUtils.useTestSeed();
+
+    DataModel produtos = new Recomendador().getModeloProdutos();
+
+    RecommenderEvaluator evaluator = new AverageAbsoluteDifferenceRecommenderEvaluator();
+    RecommenderBuilder builder = new RecomendadorDeProdutosBuilder();
+    double erro = evaluator.evaluate(buider, null, model, 0.9, 1.0);
+    System.out.println(erro);
+  }
+}
+
+public class AvaliadorCursos{
+    public static void main(String[] args) throws IOException, TasteException {
+        RandomUtils.useTestSeed();
+
+        DataModel modelo = new Recomendador().getModeloDeCursos();
+
+        RecommenderEvaluator evaluator = new AverageAbsoluteDifferenceRecommenderEvaluator();
+        RecommenderBuilder builder = new RecomendadorBuilder();
+        double erro = evaluator.evaluate(builder, null, modelo, 0.9, 1.0);
+        System.out.println(erro);
+
+    }
+}
+
+public class Recomendador {
+    public DataModel getModeloProdutos() throws IOException {
+        return getModelo("dados.csv");
+    }
+
+    private DataModel getModelo(String path) throws IOException {
+        File file = new File(path);
+        return new FileDataModel(file);
+    }
+
+    public DataModel getModeloDeCursos() throws IOException {
+        return getModelo("cursos.csv");
+    }
+}
+
+public class RecomendaCursos {
+public static void main(String[] args) throws IOException, TasteException {
+    DataModel cursos = new Recomendador().getModeloDeCursos();
+    Recommender recommender = new RecomendadorDeProdutosBuilder().buildRecommender(cursos);
+
+}
